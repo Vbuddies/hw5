@@ -62,9 +62,9 @@ def get_computer_move(board, cards, banners, turn):
 
 	# get best move
 	best = moves[0]
-	value = minVal(simBoard, simCards, simBanners, best, turn)
+	value = minVal(simBoard, simCards, simBanners, best, turn, -math.inf, math.inf)
 	for action in moves[1:]:
-		v = minVal(simBoard, simCards, simBanners, action, turn)
+		v = minVal(simBoard, simCards, simBanners, action, turn, -math.inf, math.inf)
 		if v > value:
 			best = action
 			value = v
@@ -72,7 +72,7 @@ def get_computer_move(board, cards, banners, turn):
 
 
 
-def minVal(board, cards, banners, action, turn):
+def minVal(board, cards, banners, action, turn, alpha, beta):
 	# copy the stuff
 	simBoard = deepCopyBoard(board)
 	simCards = deepCopy(cards)
@@ -110,10 +110,13 @@ def minVal(board, cards, banners, action, turn):
 	# loop over each possible action
 	for action in moves:
 		value = min(value, maxVal(simBoard, simCards, simBanners, action, turn))
+		if value <= alpha:
+			return value
+		beta = min(beta, value)
 	return value
 
 
-def maxVal(board, cards, banners, action, turn):
+def maxVal(board, cards, banners, action, turn, alpha, beta):
 	# copy the stuff
 	simBoard = deepCopyBoard(board)
 	simCards = deepCopy(cards)
@@ -153,5 +156,8 @@ def maxVal(board, cards, banners, action, turn):
 	# loop over each possible action
 	for action in moves:
 		value = max(value, minVal(simBoard, simCards, simBanners, action, turn))
+		if value >= beta:
+			return value
+		alpha = max(alpha, value)
 	return value
 
