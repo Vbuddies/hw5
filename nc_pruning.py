@@ -109,7 +109,7 @@ def minVal(board, cards, banners, action, turn, alpha, beta):
 
 	# loop over each possible action
 	for action in moves:
-		value = min(value, maxVal(simBoard, simCards, simBanners, action, turn))
+		value = min(value, maxVal(simBoard, simCards, simBanners, action, turn, alpha, beta))
 		if value <= alpha:
 			return value
 		beta = min(beta, value)
@@ -155,7 +155,7 @@ def maxVal(board, cards, banners, action, turn, alpha, beta):
 
 	# loop over each possible action
 	for action in moves:
-		value = max(value, minVal(simBoard, simCards, simBanners, action, turn))
+		value = max(value, minVal(simBoard, simCards, simBanners, action, turn, alpha, beta))
 		if value >= beta:
 			return value
 		alpha = max(alpha, value)
