@@ -105,9 +105,9 @@ def minVal(board, cards, banners, action, turn, alpha, beta, depth):
 	if(len(moves) == 0):
 		#reached end of game check who was most banners
 		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
-			return -1
+			return -2
 		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
-			return 1
+			return 2
 		else:
 			return 0
 
@@ -167,9 +167,9 @@ def maxVal(board, cards, banners, action, turn, alpha, beta, depth):
 	if(len(moves) == 0):
 		#reached end of game check who was most banners
 		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
-			return 1
+			return 2
 		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
-			return -1
+			return -2
 		else:
 			return 0
 
