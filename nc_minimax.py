@@ -1,5 +1,4 @@
 import math
-import random
 from hand_of_the_king import getvalidmoves
 
 def deepCopy(orig):
