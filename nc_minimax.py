@@ -15,6 +15,40 @@ def deepCopyBoard(orig):
 		copy.append(item)
 	return copy
 
+def move(board, x, collection):
+	# get the index of the purple card
+	x1 = board.index(1)
+
+	# color of the main card captured
+	color = board[x]
+
+	#1 card moves here
+	board[x] = 1
+
+	# Add main capture card color to list of captured cards
+	collection[color - 2] += 1
+
+	#move is left or right
+	if abs(x -x1) < len(board):
+		if x < x1:
+			possible = range(x + 1, x1)
+		else:
+			possible = range(x1 + 1, x)
+	else:
+		if x < x1:
+			possible = range(x+len(board), x1, len(board))
+		else:
+			possible = range(x1+len(board), x, len(board))
+	
+
+	for i in possible:
+		if board[i] == color:
+			board[i] = 0
+			collection[color-2] += 1
+
+	board[x1] = 0
+
+
 def get_computer_move(board, cards, banners, turn):
 	# deep copy board
 	simBoard = deepCopyBoard(board)
@@ -27,39 +61,100 @@ def get_computer_move(board, cards, banners, turn):
 	# get valid moves
 	moves = getvalidmoves(simBoard)
 
-	# call minimax
-	# return best action
-	# get all actions
-	# value = min(board, best)
-	# for action in actions[1:]:
-		# 	v = min(board, action)
-		# 	if v > value:
-		# 		best = action
-		# 		value = v
-	# return best
-
-	return random.choice(moves)
+	# get best move
+	best = moves[0]
+	value = minVal(simBoard, simCards, simBanners, best, turn)
+	for action in moves[1:]:
+		v = minVal(simBoard, simCards, simBanners, action, turn)
+		if v > value:
+			best = action
+			value = v
+	return best
 
 
 
-def minVal():
-	pass
-	# check if terminal state....is game over
+def minVal(board, cards, banners, action, turn):
+	# copy the stuff
+	simBoard = deepCopyBoard(board)
+	simCards = deepCopy(cards)
+	simBanners = deepCopy(banners)
+
+
+	# make move
+	color = simBoard[action]
+	move(simBoard, action, simCards[turn])
+
+
+	# Check to see if current player should capture a banner
+	if simCards[turn][color - 2] >= simCards[abs(turn - 1)][color - 2]:
+		simBanners[turn][color - 2] = 1  # add the banner to the player's collection
+		simBanners[abs(turn - 1)][color - 2] = 0
+	
+	# Switch turns
+	turn = abs(turn - 1)
+
+	
+	#check if terminal state....is game over
+	moves = getvalidmoves(simBoard)
+	if(len(moves) == 0):
+		#reached end of game check who was most banners
+		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
+			return -1
+		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
+			return 1
+		else:
+			return 0
 
 	# set min to max value possible
 	value = math.inf
+
 	# loop over each possible action
-		# value = min(value, maxVal(board, action)))	
-	# return value
+	for action in moves:
+		value = min(value, maxVal(simBoard, simCards, simBanners, action, turn))
+	return value
 
 
-def maxVal():
-	pass
+def maxVal(board, cards, banners, action, turn):
+	# copy the stuff
+	simBoard = deepCopyBoard(board)
+	simCards = deepCopy(cards)
+	simBanners = deepCopy(banners)
+
+
+	# make move
+	color = simBoard[action]
+	move(simBoard, action, simCards[turn])
+
+
+	# Check to see if current player should capture a banner
+	if simCards[turn][color - 2] >= simCards[abs(turn - 1)][color - 2]:
+		simBanners[turn][color - 2] = 1  # add the banner to the player's collection
+		simBanners[abs(turn - 1)][color - 2] = 0
+	
+	# Switch turns
+	turn = abs(turn - 1)
+
+	
+
 	# check if terminal state....is game over
+	moves = getvalidmoves(simBoard)
+	if(len(moves) == 0):
+		#reached end of game check who was most banners
+		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
+			return 1
+		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
+			return -1
+		else:
+			return 0
+
 
 	# set max to min value possible
 	value = -math.inf
+
 	# loop over each possible action
-		# value = max(value, minVal(board, action)))
-	# return value
+	for action in moves:
+		value = max(value, minVal(simBoard, simCards, simBanners, action, turn))
+	return value
+
+	
 
