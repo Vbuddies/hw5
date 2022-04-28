@@ -160,4 +160,3 @@ def maxVal(board, cards, banners, action, turn, alpha, beta):
 			return value
 		alpha = max(alpha, value)
 	return value
-
