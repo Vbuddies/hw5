@@ -1,6 +1,9 @@
 import math
 from hand_of_the_king import getvalidmoves
 
+#keep depth between 16-18
+MAX_DEPTH = 18
+
 def deepCopy(orig):
 	copy = [[] for x in range(len(orig))]
 	for row in range(len(orig)):
@@ -48,6 +51,10 @@ def move(board, x, collection):
 	board[x1] = 0
 
 
+def winning(board, cards, banners, turn):
+	pass
+
+
 def get_computer_move(board, cards, banners, turn):
 	# deep copy board
 	simBoard = deepCopyBoard(board)
@@ -62,9 +69,9 @@ def get_computer_move(board, cards, banners, turn):
 
 	# get best move
 	best = moves[0]
-	value = minVal(simBoard, simCards, simBanners, best, turn, -math.inf, math.inf)
+	value = minVal(simBoard, simCards, simBanners, best, turn, -math.inf, math.inf, 0)
 	for action in moves[1:]:
-		v = minVal(simBoard, simCards, simBanners, action, turn, -math.inf, math.inf)
+		v = minVal(simBoard, simCards, simBanners, action, turn, -math.inf, math.inf, 0)
 		if v > value:
 			best = action
 			value = v
@@ -72,7 +79,7 @@ def get_computer_move(board, cards, banners, turn):
 
 
 
-def minVal(board, cards, banners, action, turn, alpha, beta):
+def minVal(board, cards, banners, action, turn, alpha, beta, depth):
 	# copy the stuff
 	simBoard = deepCopyBoard(board)
 	simCards = deepCopy(cards)
@@ -104,19 +111,36 @@ def minVal(board, cards, banners, action, turn, alpha, beta):
 		else:
 			return 0
 
+	# check if reached DEPTH
+	if depth == MAX_DEPTH:
+		# could create better heruristic of winning by counting the remaining cards
+		# could use the unimplemented winning function for this
+
+		#return value of some sort
+
+		#for now just counting who is currently winning
+		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
+			return -1
+		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
+			return 1
+		else:
+			return 0
+		
+
+
 	# set min to max value possible
 	value = math.inf
 
 	# loop over each possible action
 	for action in moves:
-		value = min(value, maxVal(simBoard, simCards, simBanners, action, turn, alpha, beta))
+		value = min(value, maxVal(simBoard, simCards, simBanners, action, turn, alpha, beta, depth+1))
 		if value <= alpha:
 			return value
 		beta = min(beta, value)
 	return value
 
 
-def maxVal(board, cards, banners, action, turn, alpha, beta):
+def maxVal(board, cards, banners, action, turn, alpha, beta, depth):
 	# copy the stuff
 	simBoard = deepCopyBoard(board)
 	simCards = deepCopy(cards)
@@ -149,13 +173,29 @@ def maxVal(board, cards, banners, action, turn, alpha, beta):
 		else:
 			return 0
 
+	# check if reached DEPTH
+	if depth == MAX_DEPTH:
+		# could create better heruristic of winning by counting the remaining cards
+		# could use the unimplemented winning function for this
+
+		#return value of some sort
+
+		#for now just counting who is currently winning
+		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
+			return 1
+		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
+			return -1
+		else:
+			return 0
+
+
 
 	# set max to min value possible
 	value = -math.inf
 
 	# loop over each possible action
 	for action in moves:
-		value = max(value, minVal(simBoard, simCards, simBanners, action, turn, alpha, beta))
+		value = max(value, minVal(simBoard, simCards, simBanners, action, turn, alpha, beta, depth+1))
 		if value >= beta:
 			return value
 		alpha = max(alpha, value)
