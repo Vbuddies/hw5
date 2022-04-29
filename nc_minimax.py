@@ -97,9 +97,9 @@ def minVal(board, cards, banners, action, turn):
 	moves = getvalidmoves(simBoard)
 	if(len(moves) == 0):
 		#reached end of game check who was most banners
-		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
+		if sum(simBanners[turn]) > sum(simBanners[abs(turn - 1)]):
 			return -1
-		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
+		elif sum(simBanners[abs(turn -1)]) > sum(simBanners[turn]):
 			return 1
 		else:
 			return 0
@@ -139,9 +139,9 @@ def maxVal(board, cards, banners, action, turn):
 	moves = getvalidmoves(simBoard)
 	if(len(moves) == 0):
 		#reached end of game check who was most banners
-		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
+		if sum(simBanners[turn]) > sum(simBanners[abs(turn - 1)]):
 			return 1
-		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
+		elif sum(simBanners[abs(turn -1)]) > sum(simBanners[turn]):
 			return -1
 		else:
 			return 0
