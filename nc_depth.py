@@ -51,8 +51,67 @@ def move(board, x, collection):
 	board[x1] = 0
 
 
-def winning(board, cards, banners, turn):
-	pass
+def winning(board, cards, banners, turn, flag):
+	#flag is true when it is called from minVal
+	count = 0
+	if (cards[turn][0] >= 2): #2 available cards for this banner, if someone has both already then there is no need to try to go for this banner
+		count += 1
+	if (cards[turn][1] >= 2): #3 available cards, if someone has 2 then they have the majority
+		count += 1
+	if (cards[turn][2] >= 3): #4 available cards, need 3 to hold a majority
+		count += 1
+	if (cards[turn][3] >= 3): #5 available cards, need 3 to hold majority
+		count += 1
+	if (cards[turn][4] >= 4): #6 available cards, need 4 to hold majority
+		count += 1
+	if (cards[turn][5] >= 4): #7 available cards, need 4 to hold majority
+		count += 1
+	if (cards[turn][6] >= 5): #8 available cards, need 5 to hold majority
+		count += 1
+	
+	if count >= 4:
+		if flag:
+			return -1
+		else:
+			return 1
+	
+	#if one player has 4 locked in, player wins
+	#otherwise, count the number locked in for the other player
+	countSecondPlayer = 0
+	if (cards[abs(turn - 1)][0] >= 2): #2 available cards for this banner, if someone has both already then there is no need to try to go for this banner
+		countSecondPlayer += 1
+	if (cards[abs(turn - 1)][1] >= 2): #3 available cards, if someone has 2 then they have the majority
+		countSecondPlayer += 1
+	if (cards[abs(turn - 1)][2] >= 3): #4 available cards, need 3 to hold a majority
+		countSecondPlayer += 1
+	if (cards[abs(turn - 1)][3] >= 3): #5 available cards, need 3 to hold majority
+		countSecondPlayer += 1
+	if (cards[abs(turn - 1)][4] >= 4): #6 available cards, need 4 to hold majority
+		countSecondPlayer += 1
+	if (cards[abs(turn - 1)][5] >= 4): #7 available cards, need 4 to hold majority
+		countSecondPlayer += 1
+	if (cards[abs(turn - 1)][6] >= 5): #8 available cards, need 5 to hold majority
+		countSecondPlayer += 1
+	
+	if countSecondPlayer >= 4:
+		if flag:
+			return 1
+		else:
+			return -1
+	
+	if (count == countSecondPlayer):
+		return 0
+	elif (count > countSecondPlayer):
+		if flag:
+			return -1
+		else:
+			return 1
+	else:
+		if flag:
+			return 1
+		else:
+			return -1
+	
 
 
 def get_computer_move(board, cards, banners, turn):
@@ -104,24 +163,24 @@ def minVal(board, cards, banners, action, turn, alpha, beta, depth):
 	moves = getvalidmoves(simBoard)
 	if(len(moves) == 0):
 		#reached end of game check who was most banners
-		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
+		if sum(simBanners[turn]) > sum(simBanners[abs(turn - 1)]):
 			return -2
-		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
+		elif sum(simBanners[abs(turn -1)]) > sum(simBanners[turn]):
 			return 2
 		else:
 			return 0
 
 	# check if reached DEPTH
 	if depth == MAX_DEPTH:
-		# could create better heruristic of winning by counting the remaining cards
+		# could create better heuristic of winning by counting the remaining cards
 		# could use the unimplemented winning function for this
-
+		return winning(simBoard, simCards, simBanners, turn, True)
 		#return value of some sort
 
 		#for now just counting who is currently winning
-		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
+		if sum(simBanners[turn]) > sum(simBanners[abs(turn - 1)]):
 			return -1
-		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
+		elif sum(simBanners[abs(turn -1)]) > sum(simBanners[turn]):
 			return 1
 		else:
 			return 0
@@ -160,30 +219,28 @@ def maxVal(board, cards, banners, action, turn, alpha, beta, depth):
 	# Switch turns
 	turn = abs(turn - 1)
 
-	
-
 	# check if terminal state....is game over
 	moves = getvalidmoves(simBoard)
 	if(len(moves) == 0):
 		#reached end of game check who was most banners
-		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
+		if sum(simBanners[turn]) > sum(simBanners[abs(turn - 1)]):
 			return 2
-		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
+		elif sum(simBanners[abs(turn -1)]) > sum(simBanners[turn]):
 			return -2
 		else:
 			return 0
 
 	# check if reached DEPTH
 	if depth == MAX_DEPTH:
-		# could create better heruristic of winning by counting the remaining cards
+		# could create better heuristic of winning by counting the remaining cards
 		# could use the unimplemented winning function for this
-
+		return winning(simBoard, simCards, simBanners, turn, False)
 		#return value of some sort
 
 		#for now just counting who is currently winning
-		if sum(banners[turn]) > sum(banners[abs(turn - 1)]):
+		if sum(simBanners[turn]) > sum(simBanners[abs(turn - 1)]):
 			return 1
-		elif sum(banners[abs(turn -1)]) > sum(banners[turn]):
+		elif sum(simBanners[abs(turn -1)]) > sum(simBanners[turn]):
 			return -1
 		else:
 			return 0
